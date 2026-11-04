@@ -1,8 +1,3 @@
-/*
- * CONCEPT: ASSOCIATION (a class that links two other classes)
- * One Registration = "this Student is registered in this Course".
- * It holds REFERENCES to the Student and Course objects instead of copying their data.
- */
 public class Registration implements Displayable {
 
     private Student student;

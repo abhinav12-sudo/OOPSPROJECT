@@ -1,21 +1,11 @@
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-
-/*
- * CONCEPTS: MODULAR METHODS, EXCEPTION HANDLING, RUNTIME POLYMORPHISM
- * Main handles ONLY user interaction (menu, reading input, printing).
- * All rules live in RegistrationSystem; all file work lives in FileManager.
- */
 public class Main {
-
-    // One shared Scanner for the keyboard. "static" because main() is static.
     private static Scanner sc = new Scanner(System.in);
     private static RegistrationSystem system = new RegistrationSystem();
 
     public static void main(String[] args) {
-        FileManager.loadAll(system); // load saved data when the program STARTS
-
         boolean running = true;
         while (running) {
             printMenu();
@@ -34,16 +24,15 @@ public class Main {
                         System.out.println("Data saved.");
                         break;
                     case 9:
-                        FileManager.saveAll(system); // save automatically when leaving
+                        FileManager.saveAll(system);
                         System.out.println("Data saved. Goodbye!");
-                        running = false; // ends the while loop
+                        running = false; 
                         break;
                     case 10: markCompleted(); break;
                     case 11: dropCourse(); break;
                     default: System.out.println("Invalid choice. Please enter 1-11.");
                 }
             } catch (NoSuchElementException e) {
-                // Happens if input ends (e.g. Ctrl+D). Save and stop instead of crashing.
                 FileManager.saveAll(system);
                 running = false;
             }
@@ -64,23 +53,17 @@ public class Main {
         System.out.println("10. Mark Course as Completed (for prerequisites)");
         System.out.println("11. Drop a Course");
     }
-
-    // ------------------------------------------------------------------ input helpers
-
-    // Keeps asking until the user types a valid whole number.
     private static int readInt(String prompt) {
         while (true) {
             System.out.print(prompt);
-            String line = sc.nextLine().trim(); // read the whole line, then convert
+            String line = sc.nextLine().trim();
             try {
                 return Integer.parseInt(line);
-            } catch (NumberFormatException e) { // thrown when text is not a number, e.g. "abc"
+            } catch (NumberFormatException e) { 
                 System.out.println("Please enter a valid number.");
             }
         }
     }
-
-    // Keeps asking until text is non-empty and has no comma (a comma would break our CSV files).
     private static String readText(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -94,13 +77,9 @@ public class Main {
             }
         }
     }
-
-    // IDs and course codes are stored in UPPER CASE so "cs101" and "CS101" are the same.
     private static String readCode(String prompt) {
         return readText(prompt).toUpperCase();
     }
-
-    // ------------------------------------------------------------------ menu actions
 
     private static void addStudent() {
         String id = readCode("Student ID: ");
@@ -109,11 +88,11 @@ public class Main {
         int sem = readInt("Semester (1-8): ");
         if (sem < 1 || sem > 8) {
             System.out.println("Semester must be between 1 and 8.");
-            return; // stop this action, go back to the menu
+            return;
         }
         try {
             system.addStudent(new Student(id, name, dept, sem));
-            FileManager.saveAll(system); // save after a change
+            FileManager.saveAll(system);
             System.out.println("Student added.");
         } catch (RegistrationException e) {
             System.out.println("Error: " + e.getMessage());
@@ -196,11 +175,10 @@ public class Main {
         String sid = readCode("Student ID: ");
         String code = readCode("Course code: ");
         try {
-            system.registerStudent(sid, code); // may throw RegistrationException
+            system.registerStudent(sid, code);
             FileManager.saveAll(system);
             System.out.println("Registration successful.");
         } catch (RegistrationException e) {
-            // e.getMessage() is the meaningful message written where the rule was checked.
             System.out.println("Registration rejected: " + e.getMessage());
         }
     }
@@ -241,13 +219,6 @@ public class Main {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-    /*
-     * RUNTIME POLYMORPHISM in action:
-     * The list's declared type is Displayable, but each element is really a Student, Course or Registration.
-     * Java decides at RUN TIME which displayDetails() to call, based on the real object type.
-     * This one method therefore works for all three classes without any if/else on type.
-     */
     private static void showAll(ArrayList<Displayable> items) {
         if (items.isEmpty()) {
             System.out.println("(nothing to show)");
