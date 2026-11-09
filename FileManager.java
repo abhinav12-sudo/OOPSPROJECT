@@ -9,8 +9,6 @@ public class FileManager {
     private static final String COURSE_FILE = "courses.csv";
     private static final String REGISTRATION_FILE = "registrations.csv";
 
-    // ------------------------------------------------------------------ SAVE
-
     public static void saveAll(RegistrationSystem system) {
         try (PrintWriter out = new PrintWriter(new FileWriter(STUDENT_FILE))) {
             for (Student s : system.getAllStudents()) {
@@ -77,7 +75,6 @@ public class FileManager {
                 }
                 String[] p = line.split(",", -1);
                 try {
-                    // Integer.parseInt converts text "4" into the number 4; throws NumberFormatException if invalid.
                     system.addCourse(new Course(p[0], p[1], Integer.parseInt(p[2]), p[3], Integer.parseInt(p[4])));
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException | RegistrationException e) {
                     System.out.println("Skipping bad course record: " + line);
